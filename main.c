@@ -2,6 +2,7 @@
 
 #include "world.h"
 #include "random.h"
+#include "save.h"
 
 static SDL_Window *win;
 static SDL_Renderer *rend;

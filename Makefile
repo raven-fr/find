@@ -6,7 +6,7 @@ LFLAGS=$$(sdl2-config --libs)
 findgame: main.o world.o random.o generator.o save.o
 	$(CC) -o $@ $^ $(LFLAGS)
 
-main.o: world.h random.h
+main.o: world.h random.h save.h
 world.o: world.h random.h generator.h save.h
 generator.o: world.h random.h
 save.o: world.h die.h
