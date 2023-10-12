@@ -5,7 +5,7 @@
 
 typedef char filename[4096];
 
-#define MAGIC 0xBEE10D5
+#define MAGIC 0xBEE01D5
 #define SCHEMA 0
 
 static const char *pref_path() {
