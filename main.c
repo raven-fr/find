@@ -68,19 +68,22 @@ static int run() {
 
 int main(int argc, char *argv[]) {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		SDL_Log("error initializing SDL: %s", SDL_GetError());
+		SDL_LogCritical(SDL_LOG_CATEGORY_ERROR,
+			"error initializing SDL: %s", SDL_GetError());
 		return 1;
 	}
 	win = SDL_CreateWindow("find",
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 720,
 		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	if (!win) {
-		SDL_Log("error creating window: %s", SDL_GetError());
+		SDL_LogCritical(SDL_LOG_CATEGORY_ERROR,
+			"error creating window: %s", SDL_GetError());
 		return 1;
 	}
 	rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_PRESENTVSYNC);
 	if (!rend) {
-		SDL_Log("error creating renderer: %s", SDL_GetError());
+		SDL_LogCritical(SDL_LOG_CATEGORY_ERROR,
+			"error creating renderer: %s", SDL_GetError());
 		return 1;
 	}
 
