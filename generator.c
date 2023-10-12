@@ -58,10 +58,10 @@ void generate_chunk(world *w, chunk *c) {
 		for (int x = 0; x < CHUNK_DIM; x++) {
 			if (rand_int() % rarity == 0) {
 				int y = 0;
-
 				while (!is_solid(c->tiles[tile_index((SDL_Point) {x, y + 1})]))
 					y++;
-				c->tiles[tile_index((SDL_Point) {x, y})] = rand_int() % TILE_LIGHT;
+				tile t = rand_int() % TILE_LIGHT;
+				c->tiles[tile_index((SDL_Point) {x, y})] = t;
 			}
 		}
 	}
