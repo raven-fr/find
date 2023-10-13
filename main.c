@@ -86,6 +86,7 @@ int main(int argc, char *argv[]) {
 			"error creating renderer: %s", SDL_GetError());
 		return 1;
 	}
+	SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_BLEND);
 
 	init_world(&game);
 	while (run());

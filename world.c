@@ -4,6 +4,7 @@
 #include "random.h"
 #include "generator.h"
 #include "save.h"
+#include "counter.h"
 
 SDL_Color tile_colors[] = {
 	[TILE_RED] = {0xFF, 0x00, 0x00, 0xFF},
@@ -12,6 +13,7 @@ SDL_Color tile_colors[] = {
 	[TILE_LIGHT] = {0xFF, 0xFF, 0xFF, 0xFF},
 	[TILE_EMPTY] = {0x00, 0x00, 0x00, 0xFF},
 	[TILE_WALL] = {0x50, 0x50, 0x50, 0xFF},
+	[TILE_BLOCK_WHITE] = {0x80, 0x80, 0x80, 0xFF},
 };
 
 chunk *get_chunk(world *w, SDL_Point chunk_pos) {
@@ -106,7 +108,13 @@ void set_tile(world *w, SDL_Point world_pos, tile t) {
 }
 
 SDL_bool is_solid(tile t) {
-	return t == TILE_WALL;
+	switch (t) {
+	case TILE_WALL:
+	case TILE_BLOCK_WHITE:
+		return SDL_TRUE;
+	default:
+		return SDL_FALSE;
+	}
 }
 
 SDL_bool player_grounded(world *w) {
@@ -160,11 +168,11 @@ void player_place(world *w, int x, int y) {
 	SDL_Point place = {w->player.pos.x + x, w->player.pos.y + y};
 	if (!is_solid(get_tile(w, place))) {
 		player_collect(w, place);
-		set_tile(w, place, TILE_WALL);
+		set_tile(w, place, TILE_BLOCK_WHITE);
 	} else {
 		SDL_Point push = {w->player.pos.x - x, w->player.pos.y - y};
 		if (!is_solid(get_tile(w, push))) {
-			set_tile(w, w->player.pos, TILE_WALL);
+			set_tile(w, w->player.pos, TILE_BLOCK_WHITE);
 			w->player.pos = push;
 		}
 	}
@@ -190,7 +198,7 @@ void player_destroy(world *w, int x, int y) {
 	}
 }
 
-void draw_world(world *w, SDL_Window *win, SDL_Renderer *rend) {
+static double get_view_scale(SDL_Window *win) {
 	int sw, sh;
 	SDL_GetWindowSize(win, &sw, &sh);
 
@@ -199,6 +207,40 @@ void draw_world(world *w, SDL_Window *win, SDL_Renderer *rend) {
 		view_scale = (double) sh / (double) VIEW_DIM;
 	else
 		view_scale = (double) sw / (double) VIEW_DIM;
+
+	return view_scale;
+}
+
+static void draw_ui(world *w, SDL_Window *win, SDL_Renderer *rend) {
+	int sw, sh;
+	SDL_GetWindowSize(win, &sw, &sh);
+	double view_scale = get_view_scale(win);
+
+	double bar_size = 1.5;
+	double padding = 0.16;
+
+	SDL_Rect bar = {
+		0, sh - view_scale * (bar_size + padding), sw, view_scale * 3,
+	};
+	SDL_SetRenderDrawColor(rend, 0x00, 0x00, 0x00, 0xFF);
+	SDL_RenderFillRect(rend, &bar);
+
+	int x = view_scale * padding;
+	for (int i = 0; i < MAX_COLLECTIBLE; i++) {
+		int score = w->player.scores[i];
+		SDL_Color grey = {0x20, 0x20, 0x10, 0xFF};
+		SDL_Color collectible_color = tile_colors[i];
+		SDL_Color color = score > 0 ? collectible_color : grey;
+		SDL_Point pos = {x, bar.y + view_scale * padding};
+		x += draw_counter(rend, pos, view_scale * bar_size, color, score, 3);
+		x += view_scale * 1;
+	}
+}
+
+void draw_world(world *w, SDL_Window *win, SDL_Renderer *rend) {
+	int sw, sh;
+	SDL_GetWindowSize(win, &sw, &sh);
+	double view_scale = get_view_scale(win);
 
 	double view_width = (double) sw / view_scale;
 	double view_height = (double) sh / view_scale;
@@ -221,8 +263,8 @@ void draw_world(world *w, SDL_Window *win, SDL_Renderer *rend) {
 	SDL_Point min = chunk_pos_at((SDL_Point) {view_x, view_y});
 	SDL_Point max = chunk_pos_at(
 		(SDL_Point) {view_x + view_width, view_y + view_height});
-	for (int y = min.y; y <= max.y; y++) {
-		for (int x = min.x; x <= max.x; x++) {
+	for (int y = min.y - 1; y <= max.y; y++) {
+		for (int x = min.x - 1; x <= max.x; x++) {
 			chunk *c = load_chunk(w, (SDL_Point) {x, y});
 			if (!c) continue;
 			SDL_Texture *tex = render_chunk(rend, c);
@@ -247,6 +289,8 @@ void draw_world(world *w, SDL_Window *win, SDL_Renderer *rend) {
 	};
 	SDL_SetRenderDrawColor(rend, 0xFF, 0x00, 0xFF, 0xFF);
 	SDL_RenderFillRect(rend, &player_rect);
+
+	draw_ui(w, win, rend);
 }
 
 void tick_world(world *w) {

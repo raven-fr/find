@@ -14,6 +14,7 @@ typedef enum tile {
 
 	TILE_EMPTY,
 	TILE_WALL,
+	TILE_BLOCK_WHITE,
 } tile;
 
 extern SDL_Color tile_colors[];
