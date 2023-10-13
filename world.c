@@ -233,8 +233,8 @@ void draw_world(world *w, SDL_Window *win, SDL_Renderer *rend) {
 			int draw_y = ((double) world_y - view_y) * view_scale;
 			SDL_Rect draw_rect = {
 				draw_x, draw_y,
-				(double) CHUNK_DIM * view_scale + 0.5,
-				(double) CHUNK_DIM * view_scale + 0.5, 
+				SDL_round((double) CHUNK_DIM * view_scale),
+				SDL_round((double) CHUNK_DIM * view_scale),
 			};
 			SDL_RenderCopy(rend, tex, NULL, &draw_rect);
 		}
@@ -243,7 +243,7 @@ void draw_world(world *w, SDL_Window *win, SDL_Renderer *rend) {
 	int player_x = (w->player.pos.x - view_x) * view_scale;
 	int player_y = (w->player.pos.y - view_y) * view_scale;
 	SDL_Rect player_rect = {
-		player_x, player_y, view_scale + 0.5, view_scale + 0.5,
+		player_x, player_y, SDL_round(view_scale), SDL_round(view_scale),
 	};
 	SDL_SetRenderDrawColor(rend, 0xFF, 0x00, 0xFF, 0xFF);
 	SDL_RenderFillRect(rend, &player_rect);
