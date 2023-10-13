@@ -44,9 +44,9 @@ int draw_counter(SDL_Renderer *rend,
 	for (int i = digits - 1; i >= 0; i--) {
 		int digit = n % DIGIT_BASE;
 
-		int width = SDL_round((double) FONT_WIDTH * scale);
-		int height = SDL_round((double) FONT_HEIGHT * scale);
-		int offset = SDL_round((double) FONT_WIDTH * scale * (double) i);
+		int width = (double) FONT_WIDTH * scale + 0.5;
+		int height = (double) FONT_HEIGHT * scale + 0.5;
+		int offset = (double) FONT_WIDTH * scale * (double) i + 0.5;
 		SDL_Rect draw = {screen_pos.x + offset, screen_pos.y, width, height};
 		SDL_Rect digit_rect = {
 			0, FONT_HEIGHT * digit, FONT_WIDTH, FONT_HEIGHT,
@@ -56,5 +56,5 @@ int draw_counter(SDL_Renderer *rend,
 		n /= DIGIT_BASE;
 	}
 
-	return SDL_round((double) FONT_WIDTH * scale * (double) digits);
+	return (double) FONT_WIDTH * scale * (double) digits + 0.5;
 }
