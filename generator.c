@@ -32,23 +32,16 @@ void generate_chunk(world *w, chunk *c) {
 	SDL_memset(c->tiles, TILE_EMPTY, sizeof(c->tiles));
 	if (c->pos.y < 0) return;
 
-	static float noise_params[CHUNK_DIM * CHUNK_DIM];
-
-	for (int i = 0; i < CHUNK_DIM * CHUNK_DIM; i++) {
-		float radius = SDL_pow(rand_float(), SPARSITY);
-		if (rand_int() % 4 == 0) radius = -radius;
-		radius *= (radius > 0) ? FULLNESS : CAVERNITY;
-		if (c->pos.y == 0) {
-			int y = i / CHUNK_DIM;
-			if (y < 96) radius = 0;
-			else if (radius > 0) radius *= 1.8;
-		}
-		noise_params[i] = radius;
-	}
-
 	for (int y = 0; y < CHUNK_DIM; y++) {
 		for (int x = 0; x < CHUNK_DIM; x++) {
-			float radius = noise_params[tile_index((SDL_Point) {x, y})];
+			float radius = SDL_pow(rand_float(), SPARSITY);
+			if (rand_int() % 4 == 0) radius = -radius;
+			radius *= (radius > 0) ? FULLNESS : CAVERNITY;
+			if (c->pos.y == 0) {
+				if (y < 96) radius = 0;
+				else if (radius > 0) radius *= 1.8;
+			}
+
 			tile t = radius > 0 ? TILE_WALL : TILE_EMPTY;
 			fill_circle(c->tiles, x, y, SDL_abs(radius), t);
 		}
