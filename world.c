@@ -343,6 +343,9 @@ void tick_world(world *w) {
 }
 
 void init_world(world *w) {
-	load_world(w);
+	if (!load_world(w)) {
+		w->player.pos.x += rand_int() % 50 - 25;
+		w->player.scores[TILE_LIGHT] = 5;
+	}
 	w->view_pos = w->player.pos;
 }
