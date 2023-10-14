@@ -27,9 +27,9 @@ static SDL_Texture *get_font(SDL_Renderer *rend) {
 }
 
 int draw_counter(SDL_Renderer *rend,
-		SDL_Point screen_pos, double size, SDL_Color color,
+		SDL_Point screen_pos, int size, SDL_Color color,
 		int number, int digits) {
-	double scale = size / FONT_HEIGHT;
+	int scale = size / FONT_HEIGHT;
 
 	SDL_Texture *font = get_font(rend);
 	SDL_SetTextureColorMod(font, color.r, color.g, color.b);
@@ -44,9 +44,9 @@ int draw_counter(SDL_Renderer *rend,
 	for (int i = digits - 1; i >= 0; i--) {
 		int digit = n % DIGIT_BASE;
 
-		int width = (double) FONT_WIDTH * scale + 0.5;
-		int height = (double) FONT_HEIGHT * scale + 0.5;
-		int offset = (double) FONT_WIDTH * scale * (double) i + 0.5;
+		int width = FONT_WIDTH * scale;
+		int height = FONT_HEIGHT * scale;
+		int offset = FONT_WIDTH * scale * i;
 		SDL_Rect draw = {screen_pos.x + offset, screen_pos.y, width, height};
 		SDL_Rect digit_rect = {
 			0, FONT_HEIGHT * digit, FONT_WIDTH, FONT_HEIGHT,
@@ -56,5 +56,5 @@ int draw_counter(SDL_Renderer *rend,
 		n /= DIGIT_BASE;
 	}
 
-	return (double) FONT_WIDTH * scale * (double) digits + 0.5;
+	return FONT_WIDTH * scale * digits;
 }

@@ -198,15 +198,15 @@ void player_destroy(world *w, int x, int y) {
 	}
 }
 
-static double get_view_scale(SDL_Window *win) {
+static int get_view_scale(SDL_Window *win) {
 	int sw, sh;
 	SDL_GetWindowSize(win, &sw, &sh);
 
-	double view_scale;
+	int view_scale;
 	if (sh < sw)
-		view_scale = (double) sh / (double) VIEW_DIM;
+		view_scale = sh / VIEW_DIM;
 	else
-		view_scale = (double) sw / (double) VIEW_DIM;
+		view_scale = sw / VIEW_DIM;
 
 	return view_scale;
 }
@@ -214,25 +214,25 @@ static double get_view_scale(SDL_Window *win) {
 static void draw_ui(world *w, SDL_Window *win, SDL_Renderer *rend) {
 	int sw, sh;
 	SDL_GetWindowSize(win, &sw, &sh);
-	double view_scale = get_view_scale(win);
+	int view_scale = get_view_scale(win);
 
-	double bar_size = 1.5;
-	double padding = 0.16;
+	int bar_size = 1.5 * view_scale;
+	int padding = 0.24 * view_scale;
 
 	SDL_Rect bar = {
-		0, sh - view_scale * (bar_size + padding), sw, view_scale * 3,
+		0, sh - (bar_size + padding), sw, bar_size + padding,
 	};
 	SDL_SetRenderDrawColor(rend, 0x00, 0x00, 0x00, 0xFF);
 	SDL_RenderFillRect(rend, &bar);
 
-	int x = view_scale * padding;
+	int x = padding;
 	for (int i = 0; i < MAX_COLLECTIBLE; i++) {
 		int score = w->player.scores[i];
 		SDL_Color grey = {0x20, 0x20, 0x10, 0xFF};
 		SDL_Color collectible_color = tile_colors[i];
 		SDL_Color color = score > 0 ? collectible_color : grey;
-		SDL_Point pos = {x, bar.y + view_scale * padding};
-		x += draw_counter(rend, pos, view_scale * bar_size, color, score, 3);
+		SDL_Point pos = {x, bar.y + padding};
+		x += draw_counter(rend, pos, bar_size, color, score, 3);
 		x += view_scale * 1;
 	}
 }
@@ -240,12 +240,12 @@ static void draw_ui(world *w, SDL_Window *win, SDL_Renderer *rend) {
 void draw_world(world *w, SDL_Window *win, SDL_Renderer *rend) {
 	int sw, sh;
 	SDL_GetWindowSize(win, &sw, &sh);
-	double view_scale = get_view_scale(win);
+	int view_scale = get_view_scale(win);
 
-	double view_width = (double) sw / view_scale;
-	double view_height = (double) sh / view_scale;
-	double view_x = w->view_pos.x - view_width / 2;
-	double view_y = w->view_pos.y - view_height / 2;
+	int view_width = sw / view_scale;
+	int view_height = sh / view_scale;
+	int view_x = w->view_pos.x - view_width / 2;
+	int view_y = w->view_pos.y - view_height / 2;
 
 	SDL_Rect view_rect = {view_x, view_y, view_width + 1, view_height + 1};
 	for (int i = 0; i < MAX_CHUNKS; i++) {
@@ -271,12 +271,10 @@ void draw_world(world *w, SDL_Window *win, SDL_Renderer *rend) {
 
 			int world_x = x * CHUNK_DIM;
 			int world_y = y * CHUNK_DIM;
-			int draw_x = ((double) world_x - view_x) * view_scale;
-			int draw_y = ((double) world_y - view_y) * view_scale;
+			int draw_x = (world_x - view_x) * view_scale;
+			int draw_y = (world_y - view_y) * view_scale;
 			SDL_Rect draw_rect = {
-				draw_x, draw_y,
-				(double) CHUNK_DIM * view_scale + 0.5,
-				(double) CHUNK_DIM * view_scale + 0.5,
+				draw_x, draw_y, CHUNK_DIM * view_scale, CHUNK_DIM * view_scale,
 			};
 			SDL_RenderCopy(rend, tex, NULL, &draw_rect);
 		}
@@ -285,7 +283,7 @@ void draw_world(world *w, SDL_Window *win, SDL_Renderer *rend) {
 	int player_x = (w->player.pos.x - view_x) * view_scale;
 	int player_y = (w->player.pos.y - view_y) * view_scale;
 	SDL_Rect player_rect = {
-		player_x, player_y, view_scale + 0.5, view_scale + 0.5,
+		player_x, player_y, view_scale, view_scale,
 	};
 	SDL_SetRenderDrawColor(rend, 0xFF, 0x00, 0xFF, 0xFF);
 	SDL_RenderFillRect(rend, &player_rect);
