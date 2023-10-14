@@ -170,20 +170,20 @@ void player_collect(world *w, SDL_Point pos) {
 void player_place(world *w, int x, int y) {
 	if (!player_grounded(w)) return;
 	if (!SDL_TICKS_PASSED(SDL_GetTicks(), w->player.place_wait)) return;
-	if (w->player.scores[TILE_LIGHT] < 1) return;
-
-	w->player.scores[TILE_LIGHT]--;
 	w->player.place_wait = SDL_GetTicks() + PLAYER_PLACE_DELAY;
+	if (w->player.scores[TILE_LIGHT] < 1) return;
 
 	SDL_Point place = {w->player.pos.x + x, w->player.pos.y + y};
 	if (!is_solid(get_tile(w, place))) {
 		player_collect(w, place);
 		set_tile(w, place, TILE_BLOCK_WHITE);
+		w->player.scores[TILE_LIGHT]--;
 	} else {
 		SDL_Point push = {w->player.pos.x - x, w->player.pos.y - y};
 		if (!is_solid(get_tile(w, push))) {
 			set_tile(w, w->player.pos, TILE_BLOCK_WHITE);
 			w->player.pos = push;
+			w->player.scores[TILE_LIGHT]--;
 		}
 	}
 }
