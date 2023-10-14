@@ -306,7 +306,7 @@ void tick_world(world *w) {
 	
 	player_collect(w, w->player.pos);
 	int to_combine = SDL_min(w->player.scores[TILE_RED],
-			SDL_min(w->player.scores[TILE_GREEN], w->player.scores[TILE_BLUE]));
+		SDL_min(w->player.scores[TILE_GREEN], w->player.scores[TILE_BLUE]));
 	w->player.scores[TILE_LIGHT] += to_combine;
 	w->player.scores[TILE_RED] -= to_combine;
 	w->player.scores[TILE_GREEN] -= to_combine;

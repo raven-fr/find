@@ -22,7 +22,8 @@ static void get_chunk_filename(SDL_Point chunk_pos, filename name) {
 }
 
 static void get_world_filename(filename name) {
-	int written = SDL_snprintf(name, sizeof(filename), "%sworld.dat", pref_path());
+	int written = SDL_snprintf(
+		name, sizeof(filename), "%sworld.dat", pref_path());
 	if (written >= sizeof(filename)) die("filename too large\n");
 }
 
