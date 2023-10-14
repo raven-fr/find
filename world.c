@@ -12,7 +12,7 @@ SDL_Color tile_colors[] = {
 	[TILE_BLUE] = {0x00, 0x00, 0xFF, 0xFF},
 	[TILE_LIGHT] = {0xFF, 0xFF, 0xFF, 0xFF},
 	[TILE_EMPTY] = {0x00, 0x00, 0x00, 0xFF},
-	[TILE_WALL] = {0x50, 0x50, 0x50, 0xFF},
+	[TILE_WALL] = {0x40, 0x40, 0x40, 0xFF},
 	[TILE_BLOCK_WHITE] = {0x80, 0x80, 0x80, 0xFF},
 };
 
@@ -79,14 +79,24 @@ SDL_Texture *render_chunk(SDL_Renderer *rend, chunk *c) {
 		SDL_assert(c->tex);
 		c->dirty = SDL_TRUE;
 	}
+
 	if (c->dirty) {
 		int pitch;
 		void *out;
 		SDL_assert(SDL_LockTexture(c->tex, NULL, &out, &pitch) >= 0);
 		SDL_Color *pixels = out;
 
-		for (int i = 0; i < CHUNK_DIM * CHUNK_DIM; i++)
-			pixels[i] = tile_colors[c->tiles[i]];
+		for (int i = 0; i < CHUNK_DIM * CHUNK_DIM; i++) {
+			tile t = c->tiles[i];
+			SDL_Color color = tile_colors[t];
+			if (t == TILE_WALL) {
+				int variance = hash(i) % 5;
+				color.r += variance;
+				color.g += variance;
+				color.b += variance;
+			}
+			pixels[i] = color;
+		}
 
 		SDL_UnlockTexture(c->tex);
 		c->dirty = SDL_FALSE;

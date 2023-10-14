@@ -2,14 +2,25 @@
 
 static Uint64 random = 0xbee;
 
+Uint64 hash(Uint64 n) {
+	Uint64 h = 0;
+	for (int i = 0; i < 8; i++) {
+		h += (n >> i * 8) & 0xFF;
+		h += h << 10;
+		h ^= h >> 6;
+	}
+	h += h << 3;
+	h ^= h >> 11;
+	h += h << 15;
+	return h;
+}
+
 void seed_rand(Uint64 seed) {
 	random ^= seed;
 }
 
 Uint64 get_rand() {
-	random ^= random >> 7;
-	random ^= random << 9;
-	random ^= random >> 13;
+	random = hash(random);
 	return random;
 }
 
