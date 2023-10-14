@@ -7,7 +7,7 @@
 #define SPARSITY 40.0
 #define CAVERNITY 20.0
 
-#define SURFACE_COLLECTIBLE_RARITY 70
+#define SURFACE_COLLECTIBLE_RARITY 40
 
 static void fill_circle(Uint8 tiles[], int x, int y, float radius, tile t) {
 	int boundary = SDL_fabs(radius) + 0.5;
