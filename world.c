@@ -185,6 +185,7 @@ void player_place(world *w, int x, int y) {
 			set_tile(w, w->player.pos, TILE_BLOCK_WHITE);
 			w->player.pos = push;
 			w->player.scores[TILE_LIGHT]--;
+			if (w->player.stamina > 0) w->player.stamina -= 2;
 		}
 	}
 }
