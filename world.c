@@ -128,8 +128,7 @@ SDL_bool is_solid(tile t) {
 }
 
 SDL_bool player_grounded(world *w) {
-	if (SDL_TICKS_PASSED(SDL_GetTicks(), w->player.stamina_time))
-		return SDL_FALSE;
+	if (w->player.stamina <= 0) return SDL_FALSE;
 	SDL_bool grounded = SDL_FALSE;
 	for (int y = w->player.pos.y; y < w->player.pos.y + 2; y++) {
 		for (int x = w->player.pos.x - 1; x < w->player.pos.x + 2; x++)
@@ -141,6 +140,8 @@ SDL_bool player_grounded(world *w) {
 void player_walk(world *w, int x, int y) {
 	if (!SDL_TICKS_PASSED(SDL_GetTicks(), w->player.walk_wait))
 		return;
+
+	if (w->player.stamina > 0) w->player.stamina--;
 
 	if (x != 0 || y != 0) {
 		SDL_Point new_pos = w->player.pos;
@@ -315,7 +316,7 @@ void tick_world(world *w) {
 	tile below = get_tile(w,
 		(SDL_Point) {w->player.pos.x, w->player.pos.y + 1});
 	if (is_solid(below)) 
-		w->player.stamina_time = SDL_GetTicks() + PLAYER_STAMINA;
+		w->player.stamina = PLAYER_STAMINA;
 
 	if (!player_grounded(w)) {
 		if (SDL_TICKS_PASSED(SDL_GetTicks(), w->player.gravity_time)) {

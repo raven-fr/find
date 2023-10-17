@@ -19,14 +19,14 @@ typedef enum tile {
 
 extern SDL_Color tile_colors[];
 
-#define PLAYER_STAMINA 1250
+#define PLAYER_STAMINA 10
 #define PLAYER_WALK_DELAY 100
 #define PLAYER_PLACE_DELAY 175
 #define PLAYER_GRAVITY 30
 typedef struct player {
 	SDL_Point pos;
 	int scores[MAX_COLLECTIBLE];
-	int stamina_time;
+	int stamina;
 	int walk_wait;
 	int place_wait;
 	int gravity_time;
